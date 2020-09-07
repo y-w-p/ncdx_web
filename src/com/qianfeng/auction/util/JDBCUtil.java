@@ -8,21 +8,29 @@ import java.sql.SQLException;
 
 public class JDBCUtil {
 
-	public static Connection getConnection() {
-		Connection connection = null;
+	//useSSL=false 是Mysql数据库的SSL连接问题，提示警告不建议使用没有带服务器身份验证的SSL连接
+	private static final String driver="com.mysql.jdbc.Driver";
+	private static final String url="jdbc:mysql://localhost:3306/mytest?useSSL=false";
+	private static final String user="root";
+	private static final String password="123456";
+	static{
 		try {
-			Class.forName("com.mysql.jdbc.Driver");
-			connection = DriverManager
-					.getConnection(
-							"jdbc:mysql://cdb-kthncrwi.bj.tencentcdb.com:10159/ncdx_web",
-							"root", "2cwangzi");
-		} catch (Exception e) {
+			Class.forName(driver);
+		} catch (ClassNotFoundException e) {
 			e.printStackTrace();
 		}
-		return connection;
 	}
-
-	// ��ѯʹ�õĹر�
+	public static Connection getConnection(){
+		
+		try {
+			return DriverManager.getConnection(url,user,password);
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+		return null;
+		
+	}
+	// 查询使用的关闭
 	public static void close(ResultSet resultSet,
 			PreparedStatement preparedStatement, Connection connection) {
 		try {
@@ -34,7 +42,7 @@ public class JDBCUtil {
 		}
 	}
 
-	// ��ɾ��ĵĹر�
+	// 增删查改的关闭
 	public static void close(PreparedStatement preparedStatement,
 			Connection connection) {
 		try {
